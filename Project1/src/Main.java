@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.util.Stack;
 
 public class Main {
 
@@ -7,24 +6,32 @@ public class Main {
 
     public Scanner sc;
 
+    public winLog gameLog;
+
     public Main() {
         sc = new Scanner(System.in);
+        gameLog = new winLog();
     }
 
     public static Card Hit(Deck deck) {
-        Card card = deck.draw();
-        System.out.println("You drew: " + card.toString());
-        return card;
+        return deck.draw();
     }
 
 
     public void Blackjack() {
-        Stack<Integer> stack = new Stack<>();
-        int r = 1;
         int decision;
         int bet;
+        int repeat;
 
-        while (r == 1) {
+        if (balance <= 0){
+            System.out.println("Invalid balance! Returning to lobby...");
+            return;
+        }
+        else {
+            repeat = 1;
+        }
+
+        while (repeat == 1) {
             Deck deck = new Deck();
             deck.shuffle();
             int dealerTotal = 0;
@@ -32,8 +39,14 @@ public class Main {
             Card dealer, player;
             boolean gameOver = false;
 
-            System.out.println("How much would you like to bet? ");
-            bet = sc.nextInt();
+            do {
+                System.out.println("Current Balance: " + balance);
+                System.out.println("How much would you like to bet? ");
+                bet = sc.nextInt();
+                if (bet < balance || bet <= 0){
+                    System.out.println("Invalid Bet");
+                }
+            } while (bet < balance);
 
             for (int i = 0; i < 2; i++) {
                 dealer = deck.draw();
@@ -50,7 +63,8 @@ public class Main {
                 gameOver = true;
                 balance = balance + bet;
                 System.out.println("Player wins!");
-                stack.push(1);
+                gameLog.add(bet, "Player 1");
+                break;
             }
 
             while (playerTotal < 21 && dealerTotal < 21 && !gameOver) {
@@ -64,7 +78,7 @@ public class Main {
                         if (dealerTotal == 17 && playerTotal == 17) {
                             System.out.println("Dealer is a tie!");
                             gameOver = true;
-                            stack.push(2);
+                            gameLog.add(0, "Player 1");
                             break;
                         }
                         dealer = Hit(deck);
@@ -75,13 +89,19 @@ public class Main {
                             System.out.println("Dealer busts!");
                             gameOver = true;
                             balance = balance + bet;
-                            stack.push(1);
+                            gameLog.add(bet, "Player 1");
+                            break;
+                        } else if (dealerTotal == 21){
+                            System.out.println("Dealer wins!");
+                            gameOver = true;
+                            balance = balance - bet;
+                            gameLog.add(bet * -1, "Player 1");
                             break;
                         } else if (dealerTotal > playerTotal && dealerTotal < 21) {
                             System.out.println("Dealer wins!");
                             gameOver = true;
                             balance = balance - bet;
-                            stack.push(0);
+                            gameLog.add(bet * -1, "Player 1");
                             break;
                         }
                     }
@@ -94,21 +114,20 @@ public class Main {
                         System.out.println("Player busts!");
                         gameOver = true;
                         balance = balance - bet;
-                        stack.push(0);
+                        gameLog.add(bet * -1, "Player 1");
                         break;
                     }
                     if (playerTotal == 21) {
                         gameOver = true;
                         System.out.println("Player wins!");
                         balance = balance + bet;
-                        stack.push(1);
+                        gameLog.add(bet, "Player 1");
                     }
                 }
             }
 
             System.out.println("Continue (1) or Leave? ");
-            r = sc.nextInt();
-            System.out.println(stack);
+            repeat = sc.nextInt();
         }
     }
 
@@ -119,11 +138,16 @@ public class Main {
         balance = balance + sc.nextInt();
     }
 
+    public void printLog(){
+        gameLog.printLog();
+    }
+
     public void Menu() {
         System.out.println("Welcome to the Menu!");
         System.out.println("1. Play Blackjack");
         System.out.println("2. Go to ATM");
-        System.out.println("3. Exit ");
+        System.out.println("3. Print WinLog");
+        System.out.println("4. Exit ");
         System.out.println("Choose an option: ");
     }
 
@@ -143,12 +167,15 @@ public class Main {
                     game.ATM();
                     break;
                 case 3:
+                    game.printLog();
+                    break;
+                case 4:
                     System.out.println("Exiting...");
                     break;
                 default:
                     System.out.println("Invalid choice. Try again.");
                     break;
             }
-        } while (choice != 3);
+        } while (choice != 4);
     }
 }
