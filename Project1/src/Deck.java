@@ -13,7 +13,7 @@ public class Deck {
     public Deck() {
         deck = new LinkedList<>();
         String[] suits = {"Clubs", "Diamonds", "Hearts", "Spades"};
-        int[] values = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+        int[] values = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
         for (String suit : suits) {
             for (int value : values) {
@@ -26,6 +26,12 @@ public class Deck {
         List<Card> temp = new LinkedList<>(deck);
         Collections.shuffle(temp);
         deck = new LinkedList<>(temp);
+    }
+
+    public void printDeck() {
+        for (Card card : deck) {
+            System.out.println(card);
+        }
     }
 
     public Card draw() {

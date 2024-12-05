@@ -11,28 +11,39 @@ public class Main {
         sc = new Scanner(System.in);
     }
 
-    public static int Hit() {
-        return (int) (Math.random() * 11) + 1;
+    public static Card Hit(Deck deck) {
+        Card card = deck.draw();
+        System.out.println("You drew: " + card.toString());
+        return card;
     }
+
 
     public void Blackjack() {
         Stack<Integer> stack = new Stack<>();
         int r = 1;
-        int x;
+        int decision;
         int bet;
 
         while (r == 1) {
+            Deck deck = new Deck();
+            deck.shuffle();
             int dealerTotal = 0;
             int playerTotal = 0;
+            Card dealer, player;
             boolean gameOver = false;
-
-            int dealer = (int) (Math.random() * 20) + 2;
-            int player = (int) (Math.random() * 20) + 2;
-            dealerTotal += dealer;
-            playerTotal += player;
 
             System.out.println("How much would you like to bet? ");
             bet = sc.nextInt();
+
+            for (int i = 0; i < 2; i++) {
+                dealer = deck.draw();
+                System.out.println("Dealer drew: " + dealer.toString());
+                player = deck.draw();
+                System.out.println("You drew: " + player.toString());
+                dealerTotal += dealer.value;
+                playerTotal += player.value;
+
+            }
             System.out.println("Dealer Total: " + dealerTotal + " Player Total: " + playerTotal);
 
             if (playerTotal == 21) {
@@ -45,10 +56,10 @@ public class Main {
             while (playerTotal < 21 && dealerTotal < 21 && !gameOver) {
                 do {
                     System.out.println("Hit (0) or Stand(1)? ");
-                    x = sc.nextInt();
-                } while (x != 1 && x != 0);
+                    decision = sc.nextInt();
+                } while (decision != 1 && decision != 0);
 
-                if (x == 1) {
+                if (decision == 1) {
                     while (dealerTotal < 21) {
                         if (dealerTotal == 17 && playerTotal == 17) {
                             System.out.println("Dealer is a tie!");
@@ -56,9 +67,9 @@ public class Main {
                             stack.push(2);
                             break;
                         }
-                        dealer = Hit();
-                        System.out.println("Dealer: " + dealer);
-                        dealerTotal += dealer;
+                        dealer = Hit(deck);
+                        System.out.println("Dealer drew: " + dealer.toString());
+                        dealerTotal += dealer.value;
                         System.out.println("Dealer Total: " + dealerTotal + " Player: " + playerTotal);
                         if (dealerTotal > 21) {
                             System.out.println("Dealer busts!");
@@ -75,9 +86,9 @@ public class Main {
                         }
                     }
                 } else {
-                    player = Hit();
-                    System.out.println("Player: " + player);
-                    playerTotal += player;
+                    player = Hit(deck);
+                    System.out.println("You drew: " + player.toString());
+                    playerTotal += player.value;
                     System.out.println("Dealer Total: " + dealerTotal + " Player: " + playerTotal);
                     if (playerTotal > 21) {
                         System.out.println("Player busts!");
@@ -133,6 +144,10 @@ public class Main {
                     break;
                 case 3:
                     System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+                    break;
             }
         } while (choice != 3);
     }

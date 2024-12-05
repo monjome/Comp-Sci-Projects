@@ -16,4 +16,13 @@ public class Card {
     public int getValue() {
         return value;
     }
+
+    public String toString() {
+        if (value == 11){
+            return "Ace of " + suit;
+        }
+        else{
+            return value + " of " + suit;
+        }
+    }
 }
